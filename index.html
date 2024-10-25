@@ -1,0 +1,257 @@
+import React, { useEffect, useState, useRef } from 'react';
+import { Code, Terminal, Github, Linkedin, Mail, ArrowRight, ExternalLink, Monitor, Cpu, Sparkles } from 'lucide-react';
+
+// Keeping the previous GlowingOrb and ParticleBackground components...
+const GlowingOrb = () => {
+  return (
+    <div className="absolute w-96 h-96 rounded-full animate-pulse" 
+         style={{
+           background: 'radial-gradient(circle at center, rgba(147, 197, 253, 0.3) 0%, rgba(147, 197, 253, 0) 70%)',
+           filter: 'blur(40px)',
+           animation: 'pulse 4s infinite'
+         }}>
+    </div>
+  );
+};
+
+const ParticleBackground = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    const setCanvasSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    setCanvasSize();
+    window.addEventListener('resize', setCanvasSize);
+    
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.2;
+        this.vy = (Math.random() - 0.5) * 0.2;
+        this.radius = Math.random() * 1.5;
+        this.alpha = Math.random() * 0.3;
+      }
+      
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+      
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.fill();
+      }
+    }
+    
+    const particles = Array.from({ length: 100 }, () => new Particle());
+    
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      requestAnimationFrame(animate);
+    };
+    
+    animate();
+    return () => window.removeEventListener('resize', setCanvasSize);
+  }, []);
+  
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed top-0 left-0 w-full h-full pointer-events-none opacity-50"
+    />
+  );
+};
+
+const CustomLogo = () => (
+  <div className="flex items-center space-x-2">
+    <div className="relative font-mono text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+      <span className="absolute -top-1 left-0 text-blue-500 opacity-50 blur-sm">P4U7</span>
+      P4U7
+    </div>
+  </div>
+);
+
+const PortfolioWebsite = () => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const getGlowStyles = (x, y) => ({
+    background: `radial-gradient(circle at ${x}px ${y}px, rgba(147, 197, 253, 0.15) 0%, rgba(147, 197, 253, 0) 80%)`,
+    filter: 'blur(40px)',
+  });
+
+  const projects = [
+    {
+      title: "AI-Powered Analytics",
+      description: "Built a machine learning platform for real-time data analysis",
+      tech: ["Python", "TensorFlow", "React"],
+      icon: <Monitor className="h-6 w-6 text-blue-400" />
+    },
+    {
+      title: "Quantum Computing Simulator",
+      description: "Developed a quantum circuit simulator for educational purposes",
+      tech: ["Rust", "WebAssembly", "TypeScript"],
+      icon: <Cpu className="h-6 w-6 text-blue-400" />
+    },
+    {
+      title: "Blockchain Protocol",
+      description: "Designed and implemented a novel consensus mechanism",
+      tech: ["Solidity", "Go", "React"],
+      icon: <Code className="h-6 w-6 text-blue-400" />
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black relative overflow-hidden">
+      <ParticleBackground />
+      <div className="fixed inset-0" style={getGlowStyles(mousePos.x, mousePos.y)} />
+      <div className="fixed top-0 left-0 opacity-30"><GlowingOrb /></div>
+      <div className="fixed bottom-0 right-0 opacity-30"><GlowingOrb /></div>
+      
+      <div className="relative z-10">
+        {/* Navigation */}
+        <nav className="fixed top-0 w-full z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-lg p-4">
+              <div className="flex justify-between items-center">
+                <CustomLogo />
+                <div className="hidden md:flex space-x-8">
+                  <a href="#projects" className="text-gray-300 hover:text-blue-400 transition-colors">Projects</a>
+                  <a href="#about" className="text-gray-300 hover:text-blue-400 transition-colors">About</a>
+                  <a href="#contact" className="text-gray-300 hover:text-blue-400 transition-colors">Contact</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <div className="pt-40 pb-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 p-12 shadow-2xl">
+              <div className="text-center">
+                <h1 className="text-6xl font-bold text-white mb-6 tracking-tight">
+                  Hi, I'm
+                  <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Paul</span>
+                </h1>
+                <div className="flex items-center justify-center space-x-4 mb-8">
+                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <p className="text-xl text-gray-300 font-mono">Software Engineer & AI Researcher</p>
+                </div>
+                <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+                  Crafting elegant solutions at the intersection of artificial intelligence and software engineering.
+                </p>
+                <div className="flex justify-center space-x-6">
+                  <a href="#contact" className="group bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-2xl border border-white/20 shadow-lg hover:bg-white/20 transition-all flex items-center">
+                    Get in Touch
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                  <a href="#projects" className="bg-white/5 backdrop-blur-md text-white px-8 py-4 rounded-2xl border border-white/10 shadow-lg hover:bg-white/10 transition-all">
+                    View Projects
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Projects Section */}
+        <div id="projects" className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-white mb-4">Featured Projects</h2>
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                A selection of my recent work in AI, quantum computing, and blockchain technology.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {projects.map((project, index) => (
+                <div key={index} className="group bg-white/5 backdrop-blur-2xl p-8 rounded-2xl border border-white/10 shadow-lg hover:bg-white/10 transition-all">
+                  <div className="mb-6 transform group-hover:scale-110 transition-transform">{project.icon}</div>
+                  <h3 className="text-xl font-semibold text-white mb-4">{project.title}</h3>
+                  <p className="text-gray-300 mb-6">{project.description}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((tech, techIndex) => (
+                      <span key={techIndex} className="text-sm bg-white/5 text-blue-300 px-3 py-1 rounded-full">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Section */}
+        <div id="contact" className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 p-16 shadow-2xl text-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl" />
+              <div className="relative z-10">
+                <h2 className="text-4xl font-bold text-white mb-6">Let's Connect</h2>
+                <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                  I'm always interested in hearing about new projects and opportunities.
+                </p>
+                <div className="flex justify-center space-x-6">
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="bg-white/10 backdrop-blur-md text-white p-4 rounded-2xl border border-white/20 shadow-lg hover:bg-white/20 transition-all">
+                    <Github className="h-6 w-6" />
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="bg-white/10 backdrop-blur-md text-white p-4 rounded-2xl border border-white/20 shadow-lg hover:bg-white/20 transition-all">
+                    <Linkedin className="h-6 w-6" />
+                  </a>
+                  <a href="mailto:contact@paul.dev" className="bg-white/10 backdrop-blur-md text-white p-4 rounded-2xl border border-white/20 shadow-lg hover:bg-white/20 transition-all">
+                    <Mail className="h-6 w-6" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 p-8 shadow-2xl">
+              <div className="flex justify-between items-center">
+                <CustomLogo />
+                <p className="text-gray-400">© 2024 Paul. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+export default PortfolioWebsite;
